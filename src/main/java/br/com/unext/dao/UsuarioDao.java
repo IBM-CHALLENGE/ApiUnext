@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import br.com.unext.exceptions.ErroOperacaoException;
+import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.to.UsuarioTo;
 
 public class UsuarioDao implements IDao<UsuarioTo> {
@@ -80,5 +81,21 @@ public class UsuarioDao implements IDao<UsuarioTo> {
 		}
 
 		return null;
+	}
+	
+	public int idUsuario(UsuarioTo usuario) throws NaoEncontradoException, SQLException {
+		
+		String query = "SELECT id_usuario FROM T_UNEXT_USUARIO WHERE ds_user = ? AND ds_senha = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setString(1, usuario.getLogin());
+		stm.setString(2, usuario.getSenha());
+		
+		ResultSet resultado = stm.executeQuery();
+
+		if (resultado.next())
+			return resultado.getInt(1);
+		
+		throw new NaoEncontradoException("Usuario não encontrado");
 	}
 }

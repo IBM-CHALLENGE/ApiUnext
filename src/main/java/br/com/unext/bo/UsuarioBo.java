@@ -1,13 +1,14 @@
 package br.com.unext.bo;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import br.com.unext.dao.UsuarioDao;
 import br.com.unext.exceptions.ErroOperacaoException;
 import br.com.unext.exceptions.JaExistenteException;
-import br.com.unext.factory.ConnectionFactory;
 import br.com.unext.to.CandidatoTo;
 import br.com.unext.to.ContatoTo;
+import br.com.unext.to.EmpresaTo;
 
 public class UsuarioBo {
 
@@ -16,13 +17,15 @@ public class UsuarioBo {
 	private EnderecoBo enderecoBo;
 	private ContatoBo contatoBo;
 	private CandidatoBo candidatoBo;
+	private EmpresaBo empresaBo;
 
-	public UsuarioBo() throws ClassNotFoundException, SQLException {
-		dao = new UsuarioDao(ConnectionFactory.getConnection());
-		pessoaBo = new PessoaBo();
-		enderecoBo = new EnderecoBo();
-		contatoBo = new ContatoBo();
-		candidatoBo = new CandidatoBo();
+	public UsuarioBo(Connection conexao) throws ClassNotFoundException, SQLException {
+		dao = new UsuarioDao(conexao);
+		pessoaBo = new PessoaBo(conexao);
+		enderecoBo = new EnderecoBo(conexao);
+		contatoBo = new ContatoBo(conexao);
+		candidatoBo = new CandidatoBo(conexao);
+		empresaBo = new EmpresaBo(conexao);
 	}
 
 	public void cadastrarUsuarioCandidato(CandidatoTo candidato) throws SQLException, JaExistenteException, ErroOperacaoException {
@@ -42,11 +45,16 @@ public class UsuarioBo {
 		candidatoBo.cadastrarCandidato(candidato);
 	}
 
-//	public int cadastrarUsuarioEmpresa(EmpresaTo empresa) throws SQLException, UsuarioJaExistenteException, ErroOperacaoException {
-//
-//		if (dao.buscaByEmail(user.getLogin()) != null)
-//			throw new UsuarioJaExistenteException("Email já cadastrado");
-//
-//		return dao.cadastrar(user);
-//	}
+	public void cadastrarUsuarioEmpresa(EmpresaTo empresa) throws SQLException, JaExistenteException, ErroOperacaoException {
+
+		if (dao.buscaByEmail(empresa.getUsuario().getLogin()) != null)
+			throw new JaExistenteException("Email já cadastrado");
+
+		dao.cadastrar(empresa.getUsuario());
+		empresaBo.cadastrarEmpresa(empresa);
+		
+		int idEndereco = enderecoBo.cadastrarEndereco(empresa.getEnderecos().get(0));
+		empresaBo.cadastrarEndereco(empresa.getId(), idEndereco);
+		
+	}
 }

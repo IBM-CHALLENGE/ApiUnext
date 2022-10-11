@@ -24,6 +24,11 @@ public class ConnectionFactory {
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		//Obter a conexão com o banco de dados
-		return DriverManager.getConnection("jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl", "rm93090", "170801");
+		Connection conexao = DriverManager.getConnection("jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl", "rm93090", "170801");
+		
+		//Tirando o autocommit
+		conexao.setAutoCommit(false);
+		
+		return conexao;
 	}
 }
