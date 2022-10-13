@@ -10,14 +10,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import br.com.unext.bo.UsuarioBo;
 import br.com.unext.exceptions.ErroOperacaoException;
 import br.com.unext.exceptions.JaExistenteException;
+import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.factory.ConnectionFactory;
 import br.com.unext.to.CandidatoTo;
 import br.com.unext.to.EmpresaTo;
+import br.com.unext.to.UsuarioTo;
 
 @Path("/usuario")
 public class UsuarioServelet {
@@ -41,7 +41,6 @@ public class UsuarioServelet {
 	@Path("/candidato")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonIgnoreProperties(ignoreUnknown = true)
 	public Response cadastrarUsuarioCandidato(CandidatoTo candidato) {
 
 		try {
@@ -126,5 +125,28 @@ public class UsuarioServelet {
 			}
 		}
 		
+	}
+
+	@POST
+	@Path("/logar")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response logar(UsuarioTo usuario) {
+		try {
+			
+			String[] logado = usuarioBo.logar(usuario);
+			return Response.ok(logado).build();
+		
+		} catch (NaoEncontradoException e) {
+			return Response.status(404).build();
+		} catch (SQLException e) {
+			return Response.status(500).build();
+		} finally {
+			try {
+				conexao.close();
+			} catch (SQLException e) {
+				return Response.status(500).build();
+			}
+		}
 	}
 }

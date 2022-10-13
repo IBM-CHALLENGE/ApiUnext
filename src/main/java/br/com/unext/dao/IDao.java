@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import br.com.unext.exceptions.ErroOperacaoException;
+import br.com.unext.exceptions.NaoEncontradoException;
 
 public interface IDao<Model> {
 
@@ -39,5 +40,5 @@ public interface IDao<Model> {
 	 * @param id Id do item
 	 * @return Item do model
 	 */
-	public Model buscarById(int id) throws SQLException, ErroOperacaoException;
+	public Model buscarById(int id) throws SQLException, ErroOperacaoException, NaoEncontradoException;
 }

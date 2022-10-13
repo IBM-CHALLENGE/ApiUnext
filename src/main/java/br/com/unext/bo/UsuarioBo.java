@@ -6,9 +6,11 @@ import java.sql.SQLException;
 import br.com.unext.dao.UsuarioDao;
 import br.com.unext.exceptions.ErroOperacaoException;
 import br.com.unext.exceptions.JaExistenteException;
+import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.to.CandidatoTo;
 import br.com.unext.to.ContatoTo;
 import br.com.unext.to.EmpresaTo;
+import br.com.unext.to.UsuarioTo;
 
 public class UsuarioBo {
 
@@ -38,7 +40,7 @@ public class UsuarioBo {
 		pessoaBo.cadastrarPessoa(candidato);
 		
 		ContatoTo contato = new ContatoTo();
-		contato.setIdPessoa(candidato.getIdPessoa());
+		contato.setId(candidato.getIdPessoa());
 		contato.setEmail(candidato.getUsuario().getLogin());
 		contatoBo.cadastrarContato(contato);
 		
@@ -56,5 +58,9 @@ public class UsuarioBo {
 		int idEndereco = enderecoBo.cadastrarEndereco(empresa.getEnderecos().get(0));
 		empresaBo.cadastrarEndereco(empresa.getId(), idEndereco);
 		
+	}
+	
+	public String[] logar(UsuarioTo usuario) throws NaoEncontradoException, SQLException {
+		return dao.buscaByLogin(usuario);
 	}
 }

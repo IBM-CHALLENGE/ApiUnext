@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import br.com.unext.dao.PessoaDao;
 import br.com.unext.exceptions.ErroOperacaoException;
+import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.to.PessoaTo;
 
 public class PessoaBo {
@@ -19,4 +20,7 @@ public class PessoaBo {
 		return dao.cadastrar(pessoa);
 	}
 
+	public int buscarIdPessoaByIdCandidato(int idCandidato) throws SQLException, NaoEncontradoException{
+		return dao.buscarIdPessoaByIdCandidato(idCandidato);
+	}
 }

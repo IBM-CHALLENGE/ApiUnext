@@ -83,9 +83,21 @@ public class UsuarioDao implements IDao<UsuarioTo> {
 		return null;
 	}
 	
-	public int idUsuario(UsuarioTo usuario) throws NaoEncontradoException, SQLException {
+	public String[] buscaByLogin(UsuarioTo usuario) throws NaoEncontradoException, SQLException {
 		
-		String query = "SELECT id_usuario FROM T_UNEXT_USUARIO WHERE ds_user = ? AND ds_senha = ?";
+		String query = "SELECT "
+					+ "    T_UNEXT_USUARIO.ID_USUARIO, "
+					+ "    T_UNEXT_PESSOA.ID_PESSOA, "
+					+ "    T_UNEXT_EMPRESA.ID_EMPRESA "
+					+ "FROM "
+					+ "    T_UNEXT_USUARIO "
+					+ "    LEFT JOIN T_UNEXT_PESSOA "
+					+ "        ON T_UNEXT_USUARIO.ID_USUARIO = T_UNEXT_PESSOA.ID_USUARIO "
+					+ "    LEFT JOIN T_UNEXT_EMPRESA "
+					+ "        ON T_UNEXT_USUARIO.ID_USUARIO = T_UNEXT_EMPRESA.ID_USUARIO "
+					+ "WHERE "
+					+ "    ds_user = ? "
+					+ "    AND ds_senha = ?";
 		
 		PreparedStatement stm = conexao.prepareStatement(query);
 		stm.setString(1, usuario.getLogin());
@@ -93,8 +105,27 @@ public class UsuarioDao implements IDao<UsuarioTo> {
 		
 		ResultSet resultado = stm.executeQuery();
 
-		if (resultado.next())
-			return resultado.getInt(1);
+		if (resultado.next()) {
+			String tipoLogin = "";
+			int idLogin = 0;
+			
+			usuario.setId(resultado.getInt(1));
+			int idPessoa = resultado.getInt(2); 
+			int idEmpresa = resultado.getInt(3);
+			
+			if(idPessoa == 0 && idEmpresa == 0)
+				throw new NaoEncontradoException("Usuario não encontrado");
+			else if(idPessoa > 0) {
+				tipoLogin = "candidato";
+				idLogin = idPessoa;
+			}
+			else if(idEmpresa > 0) {
+				tipoLogin = "empresa";
+				idLogin = idEmpresa;
+			}
+			
+			return new String[] {idLogin+"", tipoLogin};			
+		}
 		
 		throw new NaoEncontradoException("Usuario não encontrado");
 	}

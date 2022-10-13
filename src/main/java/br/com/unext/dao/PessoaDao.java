@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import br.com.unext.exceptions.ErroOperacaoException;
+import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.to.PessoaTo;
 
 public class PessoaDao implements IDao<PessoaTo> {
@@ -65,4 +66,26 @@ public class PessoaDao implements IDao<PessoaTo> {
 		return null;
 	}
 
+	public int buscarIdPessoaByIdCandidato(int idCandidato) throws SQLException, NaoEncontradoException {
+		
+		String query = "SELECT  "
+					+ "    T_UNEXT_PESSOA.ID_PESSOA "
+					+ "FROM  "
+					+ "    T_UNEXT_PESSOA "
+					+ "    INNER JOIN T_UNEXT_CANDIDATO  "
+					+ "        ON T_UNEXT_PESSOA.ID_PESSOA = T_UNEXT_CANDIDATO.ID_PESSOA "
+					+ "WHERE "
+					+ "    T_UNEXT_CANDIDATO.ID_CANDIDATO = ?";
+		
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setInt(1, idCandidato);
+		
+		ResultSet result = stm.executeQuery();
+		
+		if(result.next())
+			return result.getInt(1);
+		
+		throw new NaoEncontradoException("Pessoa não encontrada");
+	}
 }
