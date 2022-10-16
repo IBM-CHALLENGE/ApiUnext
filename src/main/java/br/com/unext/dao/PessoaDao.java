@@ -43,9 +43,31 @@ public class PessoaDao implements IDao<PessoaTo> {
 	}
 
 	@Override
-	public boolean editar(PessoaTo model) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean editar(PessoaTo model) throws SQLException, ErroOperacaoException {
+		
+		String query = "UPDATE  "
+				+ "    T_UNEXT_PESSOA "
+				+ "SET "
+				+ "    NM_NOME = ?, "
+				+ "    NR_RG = ?, "
+				+ "    NR_CPF = ?, "
+				+ "    DT_NACIMENTO = TO_DATE( ? , 'DD/MM/YYYY'), "
+				+ "    SG_SEXO = ? "
+				+ "WHERE "
+				+ "    ID_PESSOA = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setString(1, model.getNome());
+		stm.setString(2, model.getRg());
+		stm.setString(3, model.getCpf());
+		stm.setString(4, model.getDataNascimento());
+		stm.setString(5, model.getSexo()+"");
+		stm.setInt(6, model.getIdPessoa());
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel atualizar a pessoa");
+		
+		return true;
 	}
 
 	@Override

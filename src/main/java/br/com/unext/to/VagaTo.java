@@ -1,61 +1,41 @@
 package br.com.unext.to;
 
-import java.util.Date;
-import java.util.List;
+import java.util.ArrayList;
 
 public class VagaTo {
 
 	private int id;
 	private EmpresaTo empresa;
 	private String descricao;
-	private Date dataCadastrado;
-	private Date dataEncerramento;
+	private String dataCadastrado;
+	private String dataEncerramento;
 	private String cargo;
 	private double salario;
-	private List<CandidaturaTo> candidaturas;
-	private List<SkillTo> skillDesejadas;
 	private int qtdVagas;
+	private char status;
+	private ArrayList<CandidaturaTo> candidaturas;
+	private ArrayList<SkillTo> skillsDesejadas;
 
 	// Construtores
 	public VagaTo() {
 
 	}
 
-	public VagaTo(int id, String descricao, Date dataCadastrado, Date dataEncerramento, double salario,
-			EmpresaTo empresa, List<CandidaturaTo> candidaturas, List<SkillTo> skillDesejadas, int qtdVagas) {
+	public VagaTo(int id, EmpresaTo empresa, String descricao, String dataCadastrado, String dataEncerramento,
+			String cargo, double salario, int qtdVagas, char status, ArrayList<CandidaturaTo> candidaturas,
+			ArrayList<SkillTo> skillsDesejadas) {
+		super();
 		this.id = id;
+		this.empresa = empresa;
 		this.descricao = descricao;
 		this.dataCadastrado = dataCadastrado;
 		this.dataEncerramento = dataEncerramento;
+		this.cargo = cargo;
 		this.salario = salario;
-		this.empresa = empresa;
-		this.candidaturas = candidaturas;
-		this.skillDesejadas = skillDesejadas;
 		this.qtdVagas = qtdVagas;
-	}
-
-	public EmpresaTo getRecrutador() {
-		return empresa;
-	}
-
-	public void setEmpresa(EmpresaTo empresa) {
-		this.empresa = empresa;
-	}
-
-	public List<SkillTo> getSkillDesejadas() {
-		return skillDesejadas;
-	}
-
-	public void setSkillDesejadas(List<SkillTo> skillDesejadas) {
-		this.skillDesejadas = skillDesejadas;
-	}
-
-	public List<CandidaturaTo> getCandidaturas() {
-		return candidaturas;
-	}
-
-	public void setCandidaturas(List<CandidaturaTo> candidaturas) {
+		this.status = status;
 		this.candidaturas = candidaturas;
+		this.skillsDesejadas = skillsDesejadas;
 	}
 
 	public int getId() {
@@ -66,6 +46,14 @@ public class VagaTo {
 		this.id = id;
 	}
 
+	public EmpresaTo getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(EmpresaTo empresa) {
+		this.empresa = empresa;
+	}
+
 	public String getDescricao() {
 		return descricao;
 	}
@@ -74,20 +62,28 @@ public class VagaTo {
 		this.descricao = descricao;
 	}
 
-	public Date getDataCadastrado() {
+	public String getDataCadastrado() {
 		return dataCadastrado;
 	}
 
-	public void setDataCadastrado(Date dataCadastrado) {
+	public void setDataCadastrado(String dataCadastrado) {
 		this.dataCadastrado = dataCadastrado;
 	}
 
-	public Date getDataEncerramento() {
+	public String getDataEncerramento() {
 		return dataEncerramento;
 	}
 
-	public void setDataEncerramento(Date dataEncerramento) {
+	public void setDataEncerramento(String dataEncerramento) {
 		this.dataEncerramento = dataEncerramento;
+	}
+
+	public String getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(String cargo) {
+		this.cargo = cargo;
 	}
 
 	public double getSalario() {
@@ -106,12 +102,28 @@ public class VagaTo {
 		this.qtdVagas = qtdVagas;
 	}
 
-	public String getCargo() {
-		return cargo;
+	public char getStatus() {
+		return status;
 	}
 
-	public void setCargo(String cargo) {
-		this.cargo = cargo;
+	public void setStatus(char status) {
+		this.status = status;
+	}
+
+	public ArrayList<CandidaturaTo> getCandidaturas() {
+		return candidaturas;
+	}
+
+	public void setCandidaturas(ArrayList<CandidaturaTo> candidaturas) {
+		this.candidaturas = candidaturas;
+	}
+
+	public ArrayList<SkillTo> getSkillsDesejadas() {
+		return skillsDesejadas;
+	}
+
+	public void setSkillsDesejadas(ArrayList<SkillTo> skillsDesejadas) {
+		this.skillsDesejadas = skillsDesejadas;
 	}
 
 }

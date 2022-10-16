@@ -14,11 +14,15 @@ public class ContatoBo {
 	private ContatoDao dao;
 	
 	public ContatoBo(Connection conexao) throws ClassNotFoundException, SQLException {
-		dao = new ContatoDao(conexao);
+		this.dao = new ContatoDao(conexao);
 	}
 	
 	public int cadastrarContato(ContatoTo contato) throws SQLException, ErroOperacaoException {
 		return dao.cadastrar(contato);
+	}
+	
+	public boolean removerContato(int id) throws SQLException, ErroOperacaoException {
+		return dao.remover(id);
 	}
 	
 	public ArrayList<ContatoTo> listarByIdPessoa(int idPessoa) throws SQLException, ErroOperacaoException, NaoEncontradoException{

@@ -20,8 +20,28 @@ public class FormacaoAcademicaDao implements IDao<FormacaoAcademicaTo>{
 	
 	@Override
 	public int cadastrar(FormacaoAcademicaTo model) throws SQLException, ErroOperacaoException {
-		// TODO Auto-generated method stub
-		return 0;
+		String query = "INSERT INTO T_UNEXT_FORMACAO_ACADEMICA (ID_GRADUACAO, ID_CANDIDATO, DS_NIVEL_GRADUCAO, DS_GRADUCAO, DS_INSTITUICAO, DT_INICIO, DT_FIM) "
+					+ "VALUES (sq_t_unext_formacao_academica.NEXTVAL, ?, ?, ?, ?, TO_DATE( ? , 'DD/MM/YYYY'), TO_DATE( ? , 'DD/MM/YYYY'))";
+		
+		PreparedStatement stm = conexao.prepareStatement(query, new String[] {"ID_GRADUACAO"});
+		
+		stm.setInt(1, model.getId());
+		stm.setString(2, model.getGrauAcademico());
+		stm.setString(3, model.getCurso());
+		stm.setString(4, model.getInstituicao());
+		stm.setString(5, model.getDataInicio());
+		stm.setString(6, model.getDataFim());
+		
+		stm.executeUpdate();
+
+		ResultSet result = stm.getGeneratedKeys();
+		
+		if (result.next()) {
+			model.setId(result.getInt(1));
+			return model.getId();
+		}
+
+		throw new ErroOperacaoException("Não foi possivel realizar o cadastro");
 	}
 
 	@Override
@@ -32,8 +52,16 @@ public class FormacaoAcademicaDao implements IDao<FormacaoAcademicaTo>{
 
 	@Override
 	public boolean remover(int id) throws SQLException, ErroOperacaoException {
-		// TODO Auto-generated method stub
-		return false;
+		
+		String query = "DELETE T_UNEXT_FORMACAO_ACADEMICA WHERE ID_GRADUACAO = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setInt(1, id);
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Não foi possivel remover");
+		
+		return true;
 	}
 
 	@Override
@@ -61,7 +89,10 @@ public class FormacaoAcademicaDao implements IDao<FormacaoAcademicaTo>{
 					+ "FROM  "
 					+ "    T_UNEXT_FORMACAO_ACADEMICA  "
 					+ "WHERE  "
-					+ "    ID_CANDIDATO = ?";
+					+ "    ID_CANDIDATO = ?"
+					+ "ORDER BY  "
+					+ "    DT_INICIO DESC,  "
+					+ "    DT_FIM DESC";
 		
 		PreparedStatement stm = conexao.prepareStatement(query);
 		stm.setInt(1, idCandidato);

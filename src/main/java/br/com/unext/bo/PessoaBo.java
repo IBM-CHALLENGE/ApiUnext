@@ -13,11 +13,15 @@ public class PessoaBo {
 	private PessoaDao dao;
 	
 	public PessoaBo(Connection conexao) throws ClassNotFoundException, SQLException {
-		dao = new PessoaDao(conexao);
+		this.dao = new PessoaDao(conexao);
 	}
 	
 	public int cadastrarPessoa(PessoaTo pessoa) throws SQLException, ErroOperacaoException {
 		return dao.cadastrar(pessoa);
+	}
+	
+	public boolean atualizarPessoa(PessoaTo pessoa) throws SQLException, ErroOperacaoException {
+		return dao.editar(pessoa);
 	}
 
 	public int buscarIdPessoaByIdCandidato(int idCandidato) throws SQLException, NaoEncontradoException{

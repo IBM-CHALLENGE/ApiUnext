@@ -4,7 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 @Path("/teste")
-public class TesteServelet {
+public class TesteResource {
 
 	@GET
 	public String teste() {

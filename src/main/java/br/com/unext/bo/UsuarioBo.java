@@ -22,12 +22,22 @@ public class UsuarioBo {
 	private EmpresaBo empresaBo;
 
 	public UsuarioBo(Connection conexao) throws ClassNotFoundException, SQLException {
-		dao = new UsuarioDao(conexao);
-		pessoaBo = new PessoaBo(conexao);
-		enderecoBo = new EnderecoBo(conexao);
-		contatoBo = new ContatoBo(conexao);
-		candidatoBo = new CandidatoBo(conexao);
-		empresaBo = new EmpresaBo(conexao);
+		this.dao = new UsuarioDao(conexao);
+		this.pessoaBo = new PessoaBo(conexao);
+		this.enderecoBo = new EnderecoBo(conexao);
+		this.contatoBo = new ContatoBo(conexao);
+		this.candidatoBo = new CandidatoBo(conexao);
+		this.empresaBo = new EmpresaBo(conexao);
+	}
+	
+	public UsuarioBo(Connection conexao, CandidatoBo candidatoBo) throws ClassNotFoundException, SQLException {
+		this.dao = new UsuarioDao(conexao);
+		this.candidatoBo = candidatoBo;
+	}
+	
+	public UsuarioBo(Connection conexao, EmpresaBo empresaBo) throws ClassNotFoundException, SQLException {
+		this.dao = new UsuarioDao(conexao);
+		this.empresaBo = empresaBo;
 	}
 
 	public void cadastrarUsuarioCandidato(CandidatoTo candidato) throws SQLException, JaExistenteException, ErroOperacaoException {
@@ -58,6 +68,10 @@ public class UsuarioBo {
 		int idEndereco = enderecoBo.cadastrarEndereco(empresa.getEnderecos().get(0));
 		empresaBo.cadastrarEndereco(empresa.getId(), idEndereco);
 		
+	}
+	
+	public boolean atualizarUsuario(UsuarioTo usuario) throws SQLException, ErroOperacaoException {
+		return dao.editar(usuario);
 	}
 	
 	public String[] logar(UsuarioTo usuario) throws NaoEncontradoException, SQLException {

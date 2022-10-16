@@ -39,9 +39,22 @@ public class UsuarioDao implements IDao<UsuarioTo> {
 	}
 
 	@Override
-	public boolean editar(UsuarioTo model) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean editar(UsuarioTo model) throws SQLException, ErroOperacaoException {
+		String query = "UPDATE "
+					+ "    T_UNEXT_USUARIO "
+					+ "SET "
+					+ "    DS_SENHA = ? "
+					+ "WHERE "
+					+ "    ID_USUARIO = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setString(1, model.getSenha());
+		stm.setInt(2, model.getId());
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel atualizar a pessoa");
+		
+		return true;
 	}
 
 	@Override

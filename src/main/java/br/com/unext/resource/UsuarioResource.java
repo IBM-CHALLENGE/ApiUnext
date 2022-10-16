@@ -20,12 +20,12 @@ import br.com.unext.to.EmpresaTo;
 import br.com.unext.to.UsuarioTo;
 
 @Path("/usuario")
-public class UsuarioServelet {
+public class UsuarioResource {
 
 	private UsuarioBo usuarioBo;
 	private Connection conexao;
 
-	public UsuarioServelet() {
+	public UsuarioResource() {
 		try {
 			conexao = ConnectionFactory.getConnection();
 

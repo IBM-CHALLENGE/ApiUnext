@@ -5,9 +5,9 @@ public class FormacaoAcademicaTo {
 	private int id;
 	private String curso;
 	private String grauAcademico;
+	private String instituicao;
 	private String dataInicio;
 	private String dataFim;
-	private String instituicao;
 
 	// Construtores
 	public FormacaoAcademicaTo() {

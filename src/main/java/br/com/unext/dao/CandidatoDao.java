@@ -8,13 +8,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
 
-import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
 import br.com.unext.exceptions.ErroOperacaoException;
 import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.to.CandidatoTo;
 import br.com.unext.to.EnderecoTo;
+import br.com.unext.to.SkillTo;
 import br.com.unext.to.UsuarioTo;
 
 public class CandidatoDao implements IDao<CandidatoTo> {
@@ -49,8 +49,24 @@ public class CandidatoDao implements IDao<CandidatoTo> {
 
 	@Override
 	public boolean editar(CandidatoTo model) throws SQLException, ErroOperacaoException {
-		// TODO Auto-generated method stub
-		return false;
+		
+		String query = "UPDATE  "
+				+ "    T_UNEXT_CANDIDATO "
+				+ "SET "
+				+ "    DS_ESCOLARIDADE = ?, "
+				+ "    DS_ATUACAO = ? "
+				+ "WHERE "
+				+ "    ID_CANDIDATO = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setString(1, model.getEscolaridade());
+		stm.setString(2, model.getAtuacao());
+		stm.setInt(3, model.getIdCandidato());
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel atualizar o candidato");
+		
+		return true;
 	}
 
 	@Override
@@ -64,16 +80,16 @@ public class CandidatoDao implements IDao<CandidatoTo> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public CandidatoTo buscarById(int id) throws SQLException, ErroOperacaoException, NaoEncontradoException {
 		
 		String query = "SELECT "
-					+ "    T_UNEXT_CANDIDATO.ID_CANDIDATO ID_CANDIDATO, "
-					+ "    T_UNEXT_CANDIDATO.DS_ESCOLARIDADE DS_ESCOLARIDADE, "
-					+ "    T_UNEXT_CANDIDATO.DS_ATUACAO DS_ATUACAO, "
-					+ "    T_UNEXT_CANDIDATO.ST_STATUS ST_STATUS, "
-					
+				+ "    T_UNEXT_CANDIDATO.ID_CANDIDATO ID_CANDIDATO, "
+				+ "    T_UNEXT_CANDIDATO.DS_ESCOLARIDADE DS_ESCOLARIDADE, "
+				+ "    T_UNEXT_CANDIDATO.DS_ATUACAO DS_ATUACAO, "
+				+ "    T_UNEXT_CANDIDATO.ST_STATUS ST_STATUS, "
+				
 					+ "    T_UNEXT_PESSOA.ID_PESSOA ID_PESSOA, "
 					+ "    T_UNEXT_PESSOA.NM_NOME NM_NOME, "
 					+ "    T_UNEXT_PESSOA.FT_PERFIL FT_PERFIL, "
@@ -126,7 +142,7 @@ public class CandidatoDao implements IDao<CandidatoTo> {
 			candidato.setCpf(resultado.getString("NR_CPF"));
 			candidato.setDataNascimento(resultado.getString("DT_NACIMENTO"));
 			candidato.setSexo(resultado.getString("SG_SEXO").charAt(0));
-
+			
 			Blob blob = resultado.getBlob("FT_PERFIL");
 			if(blob != null) {
 				//convertendo o blob em bytes
@@ -158,9 +174,39 @@ public class CandidatoDao implements IDao<CandidatoTo> {
 		
 		throw new NaoEncontradoException("Não foi possivel encontrar o candidato");
 	}
+	
+	public int cadastrarSkillCandidato(int idCandidato, SkillTo skill) throws ErroOperacaoException, SQLException {
+		String query = "INSERT INTO T_UNEXT_SKILL_CANDIDATO (ID_SKILL_CAND, ID_CANDIDATO, ID_SKILL, DS_NIVEL) "
+					+ "VALUES (sq_t_unext_skill_candidato.nextval, ?, ?, ?)";
+		
+		PreparedStatement stm = conexao.prepareStatement(query, new String[] { "ID_SKILL_CAND" });
+		stm.setInt(1, idCandidato);
+		stm.setInt(2, skill.getId());
+		stm.setInt(3, skill.getNivel());
+		
+		stm.executeUpdate();
+		
+		ResultSet result = stm.getGeneratedKeys();
+		if(result.next()) 
+			return result.getInt(1);
+		
+		throw new ErroOperacaoException("Não foi possivel realizar o cadastro");
+	}
+	
+	public boolean removerSkillCandidato(int idSkill) throws SQLException, ErroOperacaoException {
+		String query = "DELETE T_UNEXT_SKILL_CANDIDATO WHERE ID_SKILL = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setInt(1, idSkill);
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel remover");
+		
+		return true;
+	}
 
-	public void mudarFoto(String foto, int idPessoa) throws SerialException, SQLException, ErroOperacaoException {
-		byte[] decodedByte = Base64.getDecoder().decode(foto);
+	public void mudarFoto(CandidatoTo candidato) throws SerialException, SQLException, ErroOperacaoException {
+		byte[] decodedByte = Base64.getDecoder().decode(candidato.getUrlFoto());
 		Blob blob = conexao.createBlob();
 		blob.setBytes(1, decodedByte);
 				
@@ -168,10 +214,12 @@ public class CandidatoDao implements IDao<CandidatoTo> {
 		
 		PreparedStatement stm = conexao.prepareStatement(query);
 		stm.setBlob(1, blob);
-		stm.setInt(2, idPessoa);
+		stm.setInt(2, candidato.getIdPessoa());
 		
-		if(stm.executeUpdate() < 1)
+		if(stm.executeUpdate() < 1) {
+			blob.free();
 			throw new ErroOperacaoException("Alterar foto falhou");
+		}
 		
 		blob.free();
 	}
