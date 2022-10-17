@@ -46,14 +46,43 @@ public class VagaDao implements IDao<VagaTo>{
 
 	@Override
 	public boolean editar(VagaTo model) throws SQLException, ErroOperacaoException {
-		// TODO Auto-generated method stub
-		return false;
+		String query = "UPDATE "
+					+ "    T_UNEXT_VAGA "
+					+ "SET "
+					+ "    DS_DESCRICAO = ?, "
+					+ "    DS_CARGO = ?, "
+					+ "    VL_SALARIO = ?, "
+					+ "    DT_ENCERRAMENTO = TO_DATE( ? , 'DD/MM/YYYY'), "
+					+ "    QT_VAGA_DISPONIVEL = ? "
+					+ "WHERE "
+					+ "    ID_VAGA = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		
+		stm.setString(1, model.getDescricao());
+		stm.setString(2, model.getCargo());
+		stm.setDouble(3, model.getSalario());
+		stm.setString(4, model.getDataEncerramento());
+		stm.setInt(5, model.getQtdVagas());
+		stm.setInt(6, model.getId());
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel editar a vaga");
+		
+		return true;
 	}
 
 	@Override
 	public boolean remover(int id) throws SQLException, ErroOperacaoException {
-		// TODO Auto-generated method stub
-		return false;
+		String query = "DELETE T_UNEXT_VAGA WHERE ID_VAGA = ?";
+	
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setInt(1, id);
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel remover a vaga");
+		
+		return true;
 	}
 
 	@Override
@@ -243,5 +272,33 @@ public class VagaDao implements IDao<VagaTo>{
 		}
 		
 		return skills;
+	}
+
+	public boolean adicionarSkill(int idVaga, SkillTo skill) throws ErroOperacaoException, SQLException {
+		String query = "INSERT INTO T_UNEXT_SKILL_VAGA(ID_SKILL_VAGA,ID_VAGA,ID_SKILL,DS_NIVEL) "
+					+ "VALUES (sq_t_unext_skill_vaga.nextval, ?, ?, ?)";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setInt(1, idVaga);
+		stm.setInt(2, skill.getId());
+		stm.setInt(3, skill.getNivel());
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel adicionar a skill da vaga");
+		
+		return true;
+	}
+	
+	public boolean removerSkill(int idVaga, int idSkill) throws SQLException, ErroOperacaoException {
+		String query = "DELETE T_UNEXT_SKILL_VAGA WHERE id_vaga = ? AND id_skill = ?";
+	
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setInt(1, idVaga);
+		stm.setInt(2, idSkill);
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel remover a skill da vaga");
+		
+		return true;
 	}
 }

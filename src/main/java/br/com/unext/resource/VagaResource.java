@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -16,6 +18,7 @@ import br.com.unext.bo.VagaBo;
 import br.com.unext.exceptions.ErroOperacaoException;
 import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.factory.ConnectionFactory;
+import br.com.unext.to.SkillTo;
 import br.com.unext.to.VagaTo;
 
 @Path("/vaga")
@@ -98,6 +101,54 @@ public class VagaResource {
 		}
 	}
 	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response editar(VagaTo vaga) throws SQLException {
+		try {
+			bo.editar(vaga);
+			conexao.commit();
+			return Response.status(202).build();
+			
+		} catch (SQLException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		} catch (ErroOperacaoException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		}finally {
+			try {
+				conexao.close();
+			} catch (SQLException e) {
+				return Response.status(500).build();
+			}
+		}
+	}
+	
+	@DELETE
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response remover(@PathParam("id") int id) throws SQLException {
+		try {
+			
+			bo.remover(id);
+			conexao.commit();
+			return Response.status(202).build();
+			
+		} catch (SQLException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		} catch (ErroOperacaoException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		}finally {
+			try {
+				conexao.close();
+			} catch (SQLException e) {
+				return Response.status(500).build();
+			}
+		}
+	}
+	
 	@GET
 	@Path("/empresa/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -121,4 +172,56 @@ public class VagaResource {
 			}
 		}
 	}
+	
+	@POST
+	@Path("/{id}/skill")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response adicionarSkill(@PathParam("id") int idVaga, SkillTo skill) throws SQLException {
+		try {
+			
+			bo.adicionarSkill(idVaga, skill);
+			conexao.commit();
+			return Response.status(202).build();
+			
+		} catch (SQLException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		} catch (ErroOperacaoException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		}finally {
+			try {
+				conexao.close();
+			} catch (SQLException e) {
+				return Response.status(500).build();
+			}
+		}
+	}
+	
+	
+	@DELETE
+	@Path("/{idVaga}/skill/{idSkill}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response removerSkill(@PathParam("idVaga") int idVaga, @PathParam("idSkill") int idSkill) throws SQLException {
+		try {
+			
+			bo.removerSkill(idVaga, idSkill);
+			conexao.commit();
+			return Response.status(202).build();
+			
+		} catch (SQLException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		} catch (ErroOperacaoException e) {
+			conexao.rollback();
+			return Response.status(500).build();
+		}finally {
+			try {
+				conexao.close();
+			} catch (SQLException e) {
+				return Response.status(500).build();
+			}
+		}
+	}
+	
 }
