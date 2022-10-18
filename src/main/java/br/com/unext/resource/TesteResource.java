@@ -8,6 +8,6 @@ public class TesteResource {
 
 	@GET
 	public String teste() {
-		return "Ola Mundo";
+		return "Ola API uNext!";
 	}
 }
