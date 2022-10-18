@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import br.com.unext.exceptions.ErroOperacaoException;
+import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.to.UsuarioTo;
 
 public class UsuarioDao implements IDao<UsuarioTo> {
@@ -38,9 +39,22 @@ public class UsuarioDao implements IDao<UsuarioTo> {
 	}
 
 	@Override
-	public boolean editar(UsuarioTo model) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean editar(UsuarioTo model) throws SQLException, ErroOperacaoException {
+		String query = "UPDATE "
+					+ "    T_UNEXT_USUARIO "
+					+ "SET "
+					+ "    DS_SENHA = ? "
+					+ "WHERE "
+					+ "    ID_USUARIO = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setString(1, model.getSenha());
+		stm.setInt(2, model.getId());
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel atualizar a pessoa");
+		
+		return true;
 	}
 
 	@Override
@@ -80,5 +94,52 @@ public class UsuarioDao implements IDao<UsuarioTo> {
 		}
 
 		return null;
+	}
+	
+	public String[] buscaByLogin(UsuarioTo usuario) throws NaoEncontradoException, SQLException {
+		
+		String query = "SELECT "
+					+ "    T_UNEXT_USUARIO.ID_USUARIO, "
+					+ "    T_UNEXT_PESSOA.ID_PESSOA, "
+					+ "    T_UNEXT_EMPRESA.ID_EMPRESA "
+					+ "FROM "
+					+ "    T_UNEXT_USUARIO "
+					+ "    LEFT JOIN T_UNEXT_PESSOA "
+					+ "        ON T_UNEXT_USUARIO.ID_USUARIO = T_UNEXT_PESSOA.ID_USUARIO "
+					+ "    LEFT JOIN T_UNEXT_EMPRESA "
+					+ "        ON T_UNEXT_USUARIO.ID_USUARIO = T_UNEXT_EMPRESA.ID_USUARIO "
+					+ "WHERE "
+					+ "    ds_user = ? "
+					+ "    AND ds_senha = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setString(1, usuario.getLogin());
+		stm.setString(2, usuario.getSenha());
+		
+		ResultSet resultado = stm.executeQuery();
+
+		if (resultado.next()) {
+			String tipoLogin = "";
+			int idLogin = 0;
+			
+			usuario.setId(resultado.getInt(1));
+			int idPessoa = resultado.getInt(2); 
+			int idEmpresa = resultado.getInt(3);
+			
+			if(idPessoa == 0 && idEmpresa == 0)
+				throw new NaoEncontradoException("Usuario não encontrado");
+			else if(idPessoa > 0) {
+				tipoLogin = "candidato";
+				idLogin = idPessoa;
+			}
+			else if(idEmpresa > 0) {
+				tipoLogin = "empresa";
+				idLogin = idEmpresa;
+			}
+			
+			return new String[] {idLogin+"", tipoLogin};			
+		}
+		
+		throw new NaoEncontradoException("Usuario não encontrado");
 	}
 }

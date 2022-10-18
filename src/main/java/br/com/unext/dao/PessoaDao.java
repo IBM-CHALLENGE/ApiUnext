@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import br.com.unext.exceptions.ErroOperacaoException;
+import br.com.unext.exceptions.NaoEncontradoException;
 import br.com.unext.to.PessoaTo;
 
 public class PessoaDao implements IDao<PessoaTo> {
@@ -42,9 +43,31 @@ public class PessoaDao implements IDao<PessoaTo> {
 	}
 
 	@Override
-	public boolean editar(PessoaTo model) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean editar(PessoaTo model) throws SQLException, ErroOperacaoException {
+		
+		String query = "UPDATE  "
+				+ "    T_UNEXT_PESSOA "
+				+ "SET "
+				+ "    NM_NOME = ?, "
+				+ "    NR_RG = ?, "
+				+ "    NR_CPF = ?, "
+				+ "    DT_NACIMENTO = TO_DATE( ? , 'DD/MM/YYYY'), "
+				+ "    SG_SEXO = ? "
+				+ "WHERE "
+				+ "    ID_PESSOA = ?";
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setString(1, model.getNome());
+		stm.setString(2, model.getRg());
+		stm.setString(3, model.getCpf());
+		stm.setString(4, model.getDataNascimento());
+		stm.setString(5, model.getSexo()+"");
+		stm.setInt(6, model.getIdPessoa());
+		
+		if(stm.executeUpdate() < 1)
+			throw new ErroOperacaoException("Nao foi possivel atualizar a pessoa");
+		
+		return true;
 	}
 
 	@Override
@@ -65,4 +88,26 @@ public class PessoaDao implements IDao<PessoaTo> {
 		return null;
 	}
 
+	public int buscarIdPessoaByIdCandidato(int idCandidato) throws SQLException, NaoEncontradoException {
+		
+		String query = "SELECT  "
+					+ "    T_UNEXT_PESSOA.ID_PESSOA "
+					+ "FROM  "
+					+ "    T_UNEXT_PESSOA "
+					+ "    INNER JOIN T_UNEXT_CANDIDATO  "
+					+ "        ON T_UNEXT_PESSOA.ID_PESSOA = T_UNEXT_CANDIDATO.ID_PESSOA "
+					+ "WHERE "
+					+ "    T_UNEXT_CANDIDATO.ID_CANDIDATO = ?";
+		
+		
+		PreparedStatement stm = conexao.prepareStatement(query);
+		stm.setInt(1, idCandidato);
+		
+		ResultSet result = stm.executeQuery();
+		
+		if(result.next())
+			return result.getInt(1);
+		
+		throw new NaoEncontradoException("Pessoa não encontrada");
+	}
 }

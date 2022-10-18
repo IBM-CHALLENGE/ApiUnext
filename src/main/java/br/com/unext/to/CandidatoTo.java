@@ -7,11 +7,11 @@ public class CandidatoTo extends PessoaTo {
 	private int idCandidato;
 	private String escolaridade;
 	private List<ContatoTo> contatos;
+	private String atuacao;
+	private char status;
 	private List<SkillTo> skills;
 	private EnderecoTo endereco;
 	private List<FormacaoAcademicaTo> formacoesAcademicas;
-	private String atuacao;
-	private char status;
 
 	// Construtores
 	public CandidatoTo() {

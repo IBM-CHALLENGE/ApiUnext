@@ -2,22 +2,22 @@ package br.com.unext.to;
 
 public class FormacaoAcademicaTo {
 
-	private int codigo;
+	private int id;
 	private String curso;
 	private String grauAcademico;
+	private String instituicao;
 	private String dataInicio;
 	private String dataFim;
-	private String instituicao;
 
 	// Construtores
 	public FormacaoAcademicaTo() {
 
 	}
 
-	public FormacaoAcademicaTo(int codigo, String curso, String grauAcademico, String dataInicio, String dataFim,
+	public FormacaoAcademicaTo(int id, String curso, String grauAcademico, String dataInicio, String dataFim,
 			String instituicao) {
 		super();
-		this.codigo = codigo;
+		this.id = id;
 		this.curso = curso;
 		this.grauAcademico = grauAcademico;
 		this.dataInicio = dataInicio;
@@ -25,12 +25,12 @@ public class FormacaoAcademicaTo {
 		this.instituicao = instituicao;
 	}
 
-	public int getCodigo() {
-		return codigo;
+	public int getId() {
+		return id;
 	}
 
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getCurso() {

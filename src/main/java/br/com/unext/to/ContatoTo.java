@@ -3,7 +3,6 @@ package br.com.unext.to;
 public class ContatoTo {
 
 	private int id;
-	private int idPessoa;
 	private String email;
 	private String telefone;
 
@@ -12,10 +11,9 @@ public class ContatoTo {
 
 	}
 
-	public ContatoTo(int id, int idPessoa, String email, String telefone) {
+	public ContatoTo(int id, String email, String telefone) {
 		super();
 		this.id = id;
-		this.idPessoa = idPessoa;
 		this.email = email;
 		this.telefone = telefone;
 	}
@@ -26,14 +24,6 @@ public class ContatoTo {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public int getIdPessoa() {
-		return idPessoa;
-	}
-
-	public void setIdPessoa(int idPessoa) {
-		this.idPessoa = idPessoa;
 	}
 
 	public String getEmail() {
